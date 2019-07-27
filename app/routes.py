@@ -3,12 +3,13 @@ from flask import render_template, flash, redirect, url_for, request
 from app import app
 from app.forms import LoginForm
 
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User
 
 
 @app.route('/')
 @app.route('/index')
+@login_required
 def index():
     posts = [
         {
@@ -20,8 +21,7 @@ def index():
             'body': 'The Avengers movie was so cool!'
         }
     ]
-    user = {'username': '游客'}
-    return render_template('index.html', title='Home', user=user, posts=posts)    # 注意模板路径没有包含templates目录
+    return render_template('index.html', title='Home', posts=posts)    # 注意模板路径没有包含templates目录
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -41,12 +41,12 @@ def login():
         return redirect(url_for('index'))
 
         # 处理url中的next参数,没有默认为'index'
-        # next_page = request.args.get('next')
-        #if not next_page or url_parse(next_page).netloc != '':
-        #    next_page = url_for('index')
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':    # netloc为空，表示相对域名，安全
+            next_page = url_for('index')
 
-        # 跳转到next指向链接
-        # return redirect(next_page)
+        #  跳转到next指向链接
+        return redirect(next_page)
 
     return render_template('login.html', title='Sign In', form=form)
 

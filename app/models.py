@@ -14,6 +14,9 @@ class User(UserMixin, db.Model):    # mix现成的is_authenticated方法等
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
 
+    about_me = db.Column(db.String(140))
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+
     def avatar(self, size):
         """头像"""
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()

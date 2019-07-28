@@ -96,7 +96,7 @@ def user(username):
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
-    form = EditProfileForm()
+    form = EditProfileForm(current_user.username)    # 表单是带自__init__参数的
     if form.validate_on_submit():    # post request && validate success...
         current_user.username = form.username.data
         current_user.about_me = form.about_me.data

@@ -1,11 +1,12 @@
 from datetime import datetime
 from hashlib import md5
+from time import time
 
-from app import db, login    # login = LoginManager(app)
-
+import jwt
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from app import app,db, login    # login = LoginManager(app)
 
 followers = db.Table('followers',
     db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
@@ -73,6 +74,21 @@ class User(UserMixin, db.Model):    # mix现成的is_authenticated方法等
         own = Post.query.filter_by(user_id=self.id)
         return followed.union(own).order_by(Post.timestamp.desc())
 
+    def get_reset_password_token(self, expires_in=600):
+        return jwt.encode(
+            {'reset_password': self.id, 'exp': time() + expires_in},
+            app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        try:
+            id = jwt.decode(token, app.config['SECRET_KEY'],
+                            algorithms=['HS256'])['reset_password']
+        except:
+            return
+        return User.query.get(id)
+
+
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(140))
@@ -86,3 +102,4 @@ class Post(db.Model):
 @login.user_loader    # login = LoginManager(app),login对象没有User实体，需要显式load
 def load_user(id):
     return User.query.get(int(id))
+

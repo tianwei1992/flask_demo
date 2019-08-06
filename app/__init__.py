@@ -8,6 +8,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_mail import Mail
+from flask_bootstrap import Bootstrap
+
 
 from configfile import Config    # 从同级的config.py文件导入...
 
@@ -22,6 +24,7 @@ login = LoginManager(app)
 login.login_view = 'login'    # 用户未登入的情况下试图访问一个 login_required 视图，Flask-Login 会 闪现一条消息并把他们重定向到c此
 
 mail = Mail(app)
+bootstrap = Bootstrap(app)
 
 # 生产模式下，报警邮件配置
 # 测试方法：
@@ -51,6 +54,7 @@ if not app.debug:
             credentials=auth, secure=secure)
         mail_handler.setLevel(logging.ERROR)
         app.logger.addHandler(mail_handler)
+
 
 from app import routes, models, errors    # 不引入models.py等于没有这个文件，然后db migrate不生效
 

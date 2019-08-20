@@ -18,3 +18,6 @@ class Config(object):
 
     # 分页
     POSTS_PER_PAGE = 4
+
+    # 语言的国际化
+    LANGUAGES = ['en', 'es', 'zh']

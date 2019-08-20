@@ -2,7 +2,7 @@ import os
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
-from flask import Flask
+from flask import Flask, request
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -10,6 +10,7 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
+from flask_babel import Babel, lazy_gettext as _l
 
 
 from configfile import Config    # 从同级的config.py文件导入...
@@ -23,10 +24,12 @@ migrate = Migrate(app, db)    # 注册插件  Flask-Migrate
 
 login = LoginManager(app)
 login.login_view = 'login'    # 用户未登入的情况下试图访问一个 login_required 视图，Flask-Login 会 闪现一条消息并把他们重定向到c此
+login.login_message = _l('请先登录.')
 
 mail = Mail(app)
 bootstrap = Bootstrap(app)
 moment = Moment(app)
+babel = Babel(app)
 
 # 生产模式下，报警邮件配置
 # 测试方法：
@@ -77,3 +80,11 @@ if not app.debug:
 
     app.logger.setLevel(logging.INFO)
     app.logger.info('Microblog startup')    # 服务器每次启动先出一行日志
+
+
+
+# 语言国际化配置
+# 每个请求都会调用这个函数，从request对象的accetpt_languages匹配到服务器最适合的语言
+@babel.localeselector
+def get_locale():
+    return request.accept_languages.best_match(app.config['LANGUAGES'])

@@ -1,15 +1,17 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
+from flask_babel import _, lazy_gettext as _l
 
 from app.models import User
 
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    remember_me = BooleanField('Remember Me')
-    submit = SubmitField('Sign In')
+    username = StringField(_l('Username'), validators=[DataRequired()])
+    password = PasswordField(_l('Password'), validators=[DataRequired()])
+    remember_me = BooleanField(_l('Remember Me'))
+    submit = SubmitField(_l('Sign In'))
+    # 后面的form本应加_l，但节约时间，就省略吧
 
 
 class RegistrationForm(FlaskForm):
@@ -49,9 +51,9 @@ class EditProfileForm(FlaskForm):
 
 
 class PostForm(FlaskForm):
-    post = TextAreaField('Say something', validators=[
+    post = TextAreaField(_l('Say something'), validators=[
         DataRequired(), Length(min=1, max=140)])
-    submit = SubmitField('Submit')
+    submit = SubmitField(_l('Submit'))
 
 
 class ResetPasswordRequestForm(FlaskForm):

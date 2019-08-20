@@ -9,6 +9,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_bootstrap import Bootstrap
+from flask_moment import Moment
 
 
 from configfile import Config    # 从同级的config.py文件导入...
@@ -25,6 +26,7 @@ login.login_view = 'login'    # 用户未登入的情况下试图访问一个 lo
 
 mail = Mail(app)
 bootstrap = Bootstrap(app)
+moment = Moment(app)
 
 # 生产模式下，报警邮件配置
 # 测试方法：

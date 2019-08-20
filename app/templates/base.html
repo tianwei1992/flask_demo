@@ -55,3 +55,9 @@
         {% block app_content %}
         {% endblock %}
 {% endblock %}
+
+/* 用flask-moment封装好的方法引入moment.js，而不用手动引入 */
+{% block scripts %}
+    {{ super() }}    /* extends上一级内容填充完block空缺后，又新增了一个block */
+    {{ moment.include_moment() }}
+{% endblock %}

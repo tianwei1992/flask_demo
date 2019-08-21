@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2019-08-20 20:39+0800\n"
-"PO-Revision-Date: 2019-08-20 20:35+0800\n"
+"PO-Revision-Date: 2019-08-21 11:02+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh\n"
 "Language-Team: zh <LL@li.org>\n"
@@ -48,54 +48,54 @@ msgstr ""
 
 #: app/forms.py:56
 msgid "Submit"
-msgstr "提交"
+msgstr ""
 
 #: app/templates/_post.html:14
 #, python-format
 msgid "%(username)s said %(when)s"
-msgstr "%(username)s 在 %(when)s 说"
+msgstr ""
 
 #: app/templates/base.html:25
 msgid "Home"
-msgstr "主页"
+msgstr "zh主页"
 
 #: app/templates/base.html:26
 msgid "Explore"
-msgstr "浏览"
+msgstr ""
 
 #: app/templates/base.html:30
 msgid "Login"
-msgstr "登录"
+msgstr ""
 
 #: app/templates/base.html:32
 msgid "Profile"
-msgstr "我的"
+msgstr ""
 
 #: app/templates/base.html:33
 msgid "Logout"
-msgstr "登出"
+msgstr ""
 
 #: app/templates/user.html:11
 msgid "Last seen on"
-msgstr "上次出现"
+msgstr ""
 
 #: app/templates/user.html:13
 msgid "followers"
-msgstr "关注者"
+msgstr ""
 
 #: app/templates/user.html:13
 msgid "following"
-msgstr "关注的人"
+msgstr ""
 
 #: app/templates/user.html:16
 msgid "Edit your profile"
-msgstr "编辑我的简介"
+msgstr ""
 
 #: app/templates/user.html:18
 msgid "Follow"
-msgstr "关注"
+msgstr ""
 
 #: app/templates/user.html:20
 msgid "Unfollow"
-msgstr "取关"
+msgstr ""
 

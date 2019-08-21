@@ -60,4 +60,5 @@
 {% block scripts %}
     {{ super() }}    <!-- extends上一级内容填充完block空缺后，又新增了一个block -->
     {{ moment.include_moment() }}
+    {{ moment.lang(g.locale) }}    <!-- moment.js对时间不仅提供格式化，还提供按locale翻译。这里是全局 -->
 {% endblock %}

@@ -20,4 +20,4 @@ class Config(object):
     POSTS_PER_PAGE = 4
 
     # 语言的国际化
-    LANGUAGES = ['en', 'es', 'zh']
+    LANGUAGES = ['en', 'es', 'zh_Hans_CN', 'zh']

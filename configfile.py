@@ -14,6 +14,10 @@ class Config(object):
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+
+    BAIDU_TRANSLATOR_APPID = os.environ.get('BAIDU_TRANSLATOR_APPID')
+    BAIDU_TRANSLATOR_SECRETKEY = os.environ.get('BAIDU_TRANSLATOR_SECRETKEY')
+
     ADMINS = ['tianweigrace@gmail.com']
 
     # 分页

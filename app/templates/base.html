@@ -61,4 +61,20 @@
     {{ super() }}    <!-- extends上一级内容填充完block空缺后，又新增了一个block -->
     {{ moment.include_moment() }}
     {{ moment.lang(g.locale) }}    <!-- moment.js对时间不仅提供格式化，还提供按locale翻译。这里是全局 -->
+
+       <!-- 提供动态翻译的ajax -->
+        <script>
+        function translate(sourceElem, destElem, sourceLang, destLang) {
+            $(destElem).html('<img src="{{ url_for('static', filename='loading.gif') }}">');
+            $.post('/translate', {
+                text: $(sourceElem).text(),
+                source_language: sourceLang,
+                dest_language: destLang
+            }).done(function(response) {
+                $(destElem).text(response['text']['trans_result'][0]['dst'])
+            }).fail(function() {
+                $(destElem).text("{{ _('Error: Could not contact server.') }}");
+            });
+        }
+    </script>
 {% endblock %}

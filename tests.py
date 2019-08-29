@@ -1,16 +1,27 @@
 from datetime import datetime, timedelta
 import unittest
-from app import app, db
+
+from app import create_app, db
 from app.models import User, Post
+from configfile import Config
+
+
+class TestConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite://'
+
 
 class UserModelCase(unittest.TestCase):
     def setUp(self):
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
-        db.create_all()
+        self.app = create_app(TestConfig)
+        self.app_context = self.app.app_context()
+        self.app_context.push()
+        db.create_all()    # db需要绑定app，因为app中有db的url，使用工厂模式后有很多app，使用上一句push会自动push当前活跃的app来绑定
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
+        self.app_context.pop()
 
     def test_password_hashing(self):
         u = User(username='susan')

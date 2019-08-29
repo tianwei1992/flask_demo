@@ -1,5 +1,8 @@
 import os
+from dotenv import load_dotenv
+
 basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, '.env'))    # 从.env文件导入环境变量
 
 class Config(object):
     """父类是普通的object"""

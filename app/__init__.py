@@ -2,7 +2,7 @@ import os
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
-from flask import Flask, request
+from flask import Flask, request, current_app
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -16,20 +16,72 @@ from flask_babel import Babel, lazy_gettext as _l
 from configfile import Config    # 从同级的config.py文件导入...
 
 
-app = Flask(__name__)
-app.config.from_object(Config)  # 从configfile.py文件的Config类导入配置，解耦.其中app.config是Flask类的一个特性而不是configfile.py的文件名
-
-db = SQLAlchemy(app)   # 注册插件Flask-SQLAlchemy
-migrate = Migrate(app, db)    # 注册插件  Flask-Migrate
-
-login = LoginManager(app)
-login.login_view = 'login'    # 用户未登入的情况下试图访问一个 login_required 视图，Flask-Login 会 闪现一条消息并把他们重定向到c此
+db = SQLAlchemy()
+migrate = Migrate()
+login = LoginManager()
+login.login_view = 'auth.login'
 login.login_message = _l('请先登录.')
+mail = Mail()
+bootstrap = Bootstrap()
+moment = Moment()
+babel = Babel()
 
-mail = Mail(app)
-bootstrap = Bootstrap(app)
-moment = Moment(app)
-babel = Babel(app)
+
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
+
+    db.init_app(app)
+    migrate.init_app(app, db)
+    login.init_app(app)
+    mail.init_app(app)
+    bootstrap.init_app(app)
+    moment.init_app(app)
+    babel.init_app(app)
+
+    from app.errors import bp as errors_bp
+    app.register_blueprint(errors_bp, url_prefix='/')
+
+    from app.auth import bp as auth_bp
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+
+    from app.main import bp as main_bp
+    app.register_blueprint(main_bp, url_prefix='/')
+
+    if not app.debug and not app.testing:
+        # 邮件配置
+        if app.config['MAIL_SERVER']:
+            auth = None
+            if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
+                auth = (app.config['MAIL_USERNAME'],
+                        app.config['MAIL_PASSWORD'])
+            secure = None
+            if app.config['MAIL_USE_TLS']:
+                secure = ()
+            mail_handler = SMTPHandler(
+                mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
+                fromaddr='no-reply@' + app.config['MAIL_SERVER'],
+                toaddrs=app.config['ADMINS'], subject='Microblog Failure',
+                credentials=auth, secure=secure)
+            mail_handler.setLevel(logging.ERROR)
+            app.logger.addHandler(mail_handler)
+
+        # 日志配置
+        if not os.path.exists('logs'):
+            os.mkdir('logs')
+        file_handler = RotatingFileHandler('logs/microblog.log',
+                                           maxBytes=10240, backupCount=10)
+        file_handler.setFormatter(logging.Formatter(
+            '%(asctime)s %(levelname)s: %(message)s '
+            '[in %(pathname)s:%(lineno)d]'))
+        file_handler.setLevel(logging.INFO)
+        app.logger.addHandler(file_handler)
+
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('Microblog startup')
+
+    return app
+
 
 # 生产模式下，报警邮件配置
 # 测试方法：
@@ -42,51 +94,15 @@ babel = Babel(app)
 #
 # export FLASK_APP=microblog.py &&  FLASK_ENV=produce flask run --host='0.0.0.0' --port='10024'
 # 2. 配置好真实地址，发到真正的邮件服务器 
-if not app.debug:
-    if app.config['MAIL_SERVER']:
-        auth = None
-        if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
-            auth = (app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
-        secure = None
-        if app.config['MAIL_USE_TLS']:
-            secure = ()
-        
-        # 设置告警级别，只有严重到ERROR才发邮件
-        mail_handler = SMTPHandler(
-            mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
-            fromaddr='no-reply@' + app.config['MAIL_SERVER'],
-            toaddrs=app.config['ADMINS'], subject='Microblog Failure',
-            credentials=auth, secure=secure)
-        mail_handler.setLevel(logging.ERROR)
-        app.logger.addHandler(mail_handler)
 
 
-from app import routes, models, errors    # 不引入models.py等于没有这个文件，然后db migrate不生效
-
-
-# 日志配置
-if not app.debug:
-    # ...
-
-    if not os.path.exists('logs'):
-        os.mkdir('logs')
-
-    file_handler = RotatingFileHandler('logs/microblog.log', maxBytes=10240,
-                                       backupCount=10)
-    file_handler.setFormatter(logging.Formatter(
-        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
-    file_handler.setLevel(logging.INFO)
-    app.logger.addHandler(file_handler)
-
-    app.logger.setLevel(logging.INFO)
-    app.logger.info('Microblog startup')    # 服务器每次启动先出一行日志
-
+from app import models    # 不引入models.py等于没有这个文件，然后db migrate不生效
 
 
 # 语言国际化配置
 # 每个请求都会调用这个函数，从request对象的accetpt_languages匹配到服务器最适合的语言
 @babel.localeselector
 def get_locale():
-    return request.accept_languages.best_match(app.config['LANGUAGES'])
+    return request.accept_languages.best_match(current_app.config['LANGUAGES'])
 
 

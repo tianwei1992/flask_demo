@@ -4,21 +4,21 @@ from urllib.parse import quote
 from hashlib import md5
 
 import requests
+from flask import current_app
 from flask_babel import _
 
-from app import app
 
 
 def translate(q, from_lang, to_lang):
     """调用百度翻译接口"""
-    if 'BAIDU_TRANSLATOR_APPID' not in app.config or \
-            not app.config['BAIDU_TRANSLATOR_APPID'] or \
-            'BAIDU_TRANSLATOR_SECRETKEY' not in app.config or \
-            not app.config['BAIDU_TRANSLATOR_SECRETKEY']:
+    if 'BAIDU_TRANSLATOR_APPID' not in current_app.config or \
+            not current_app.config['BAIDU_TRANSLATOR_APPID'] or \
+            'BAIDU_TRANSLATOR_SECRETKEY' not in current_app.config or \
+            not current_app.config['BAIDU_TRANSLATOR_SECRETKEY']:
         return _('Error: the translation service is not configured.')
 
-    appid = app.config['BAIDU_TRANSLATOR_APPID']
-    secretKey = app.config['BAIDU_TRANSLATOR_SECRETKEY']
+    appid = current_app.config['BAIDU_TRANSLATOR_APPID']
+    secretKey = current_app.config['BAIDU_TRANSLATOR_SECRETKEY']
 
     salt = random.randint(32768, 65536)
     myurl = 'http://api.fanyi.baidu.com/api/trans/vip/translate'

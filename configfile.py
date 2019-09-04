@@ -21,6 +21,9 @@ class Config(object):
     BAIDU_TRANSLATOR_APPID = os.environ.get('BAIDU_TRANSLATOR_APPID')
     BAIDU_TRANSLATOR_SECRETKEY = os.environ.get('BAIDU_TRANSLATOR_SECRETKEY')
 
+    # 日志输出到stdout，heroku logs查看
+    LOG_TO_STDOUT = os.environ.get('LOG_TO_STDOUT')
+
     ADMINS = ['tianweigrace@gmail.com']
 
     # 分页
